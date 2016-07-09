@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2006-2015 OpenWrt.org
+# Copyright (C) 2006-2016 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -8,24 +8,32 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gpsd
-PKG_VERSION:=3.15
-PKG_RELEASE:=2
+#PKG_VERSION:=3.15
+PKG_VERSION:=3.16-20160621
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://download-mirror.savannah.gnu.org/releases/gpsd/
-PKG_MD5SUM:=afd79b87337fadf38ee2a7c4314dac79
+#PKG_SOURCE_URL:=http://download-mirror.savannah.gnu.org/releases/gpsd/
+#PKG_MD5SUM:=afd79b87337fadf38ee2a7c4314dac79
+
+PKG_REV:=1f67f871e8755c4c7378f354e25177f10302feb6
+PKG_SOURCE_URL:=git://git.sv.gnu.org/gpsd.git
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
+PKG_SOURCE_VERSION:=$(PKG_REV)
 
 PKG_MAINTAINER:=Pushpal Sidhu <psidhu@gateworks.com>
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=COPYING
 
-PKG_BUILD_DEPENDS:=libncurses libusb-1.0
+PKG_BUILD_DEPENDS:=libncurses libusb-1.0 pps-tools
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/scons.mk
 
 define Package/gpsd/Default
-  DEPENDS:=+librt +libncurses
+  DEPENDS:=+kmod-pps-ldisc +librt +libncurses
   URL:=http://catb.org/gpsd/
 endef
 
@@ -45,6 +53,7 @@ define Package/gpsd
   CATEGORY:=Network
   DEPENDS+= +libgps +libusb-1.0
   TITLE:=An interface daemon for GPS receivers
+  VARIANT:=full
 endef
 
 define Package/gpsd/conffiles
@@ -56,12 +65,49 @@ define Package/gpsd/description
   This package contains the GPS daemon.
 endef
 
+define Package/gpsd-minimal
+  $(call Package/gpsd/Default)
+  SECTION:=net
+  CATEGORY:=Network
+  DEPENDS+= +libgps-minimal +libusb-1.0
+  TITLE:=An interface daemon for GPS receivers (minimal)
+  VARIANT:=minimal
+endef
+
+define Package/gpsd-minimal/conffiles
+$(call Package/gpsd/conffiles)
+endef
+
+define Package/gpsd-minimal/description
+  $(call Package/gpsd/Default/description)
+  This package contains the GPS daemon in the minimal configuration.
+endef
+
+define Package/gpsd-timeservice
+  $(call Package/gpsd/Default)
+  SECTION:=net
+  CATEGORY:=Network
+  DEPENDS+= +libgps-timeservice +libusb-1.0
+  TITLE:=An interface daemon for GPS receivers (timeservice)
+  VARIANT:=timeservice
+endef
+
+define Package/gpsd-timeservice/conffiles
+$(call Package/gpsd/conffiles)
+endef
+
+define Package/gpsd-timeservice/description
+  $(call Package/gpsd/Default/description)
+  This package contains the GPS daemon in the time-service configuration.
+endef
+
 define Package/gpsd-clients
   $(call Package/gpsd/Default)
   SECTION:=net
   CATEGORY:=Network
   DEPENDS+= +libgps +libncurses +libusb-1.0
   TITLE:=GPS tools and clients
+  VARIANT:=full
 endef
 
 define Package/gpsd-clients/description
@@ -70,12 +116,42 @@ define Package/gpsd-clients/description
   testing the GPS daemon.
 endef
 
+define Package/gpsd-clients-minimal
+  $(call Package/gpsd/Default)
+  SECTION:=net
+  CATEGORY:=Network
+  DEPENDS+= +libgps-minimal +libncurses +libusb-1.0
+  TITLE:=GPS tools and clients (minimal)
+  VARIANT:=minimal
+endef
+
+define Package/gpsd-clients-minimal/description
+  $(call Package/gpsd/Default/description)
+  This package contains auxiliary tools and example clients for monitoring and
+  testing the GPS daemon in the minimal configuration.
+endef
+
+define Package/gpsd-clients-timeservice
+  $(call Package/gpsd/Default)
+  SECTION:=net
+  CATEGORY:=Network
+  DEPENDS+= +libgps-timeservice +libncurses +libusb-1.0
+  TITLE:=GPS tools and clients (timeservice)
+  VARIANT:=timeservice
+endef
+
+define Package/gpsd-clients-timeservice/description
+  $(call Package/gpsd/Default/description)
+  This package contains auxiliary tools and example clients for monitoring and
+  testing the GPS daemon in the time-service configuration.
+endef
+
 define Package/libgps
   $(call Package/gpsd/Default)
   SECTION:=libs
   CATEGORY:=Libraries
-  DEPENDS+= +libcap
   TITLE:=C service library for communicating with the GPS daemon
+  VARIANT:=full
 endef
 
 define Package/libgps/description
@@ -83,9 +159,36 @@ define Package/libgps/description
   This package contains the libgps library.
 endef
 
+define Package/libgps-minimal
+  $(call Package/gpsd/Default)
+  SECTION:=libs
+  CATEGORY:=Libraries
+  TITLE:=C service library for communicating with the GPS daemon (minimal)
+  VARIANT:=minimal
+endef
+
+define Package/libgps-minimal/description
+  $(call Package/gpsd/Default/description)
+  This package contains the libgps library in the minimal configuration.
+endef
+
+define Package/libgps-timeservice
+  $(call Package/gpsd/Default)
+  SECTION:=libs
+  CATEGORY:=Libraries
+  TITLE:=C service library for communicating with the GPS daemon (timeservice)
+  VARIANT:=timeservice
+endef
+
+define Package/libgps-timeservice/description
+  $(call Package/gpsd/Default/description)
+  This package contains the libgps library in the time-service configuration.
+endef
+
 SCONS_VARS += \
 	LINKFLAGS="$(TARGET_LDFLAGS)"
 
+ifeq ($(BUILD_VARIANT),full)
 SCONS_OPTIONS += \
 	dbus_export=no \
 	tsip=no \
@@ -104,15 +207,49 @@ SCONS_OPTIONS += \
 	python=no \
 	implicit_link=no \
 	chrpath=no
+endif
+
+ifeq ($(BUILD_VARIANT),minimal)
+SCONS_OPTIONS += \
+	minimal=yes \
+	control_socket=yes \
+	controlsend=yes \
+	ipv6=yes \
+	ncurses=yes \
+	netfeed=yes \
+	nmea0183=yes \
+	nostrip=yes \
+	ntp=yes \
+	ntpshm=yes \
+	oscillator=yes \
+	passthrough=yes \
+	pps=yes \
+	reconfigure=yes \
+	shared=yes \
+	shm_export=yes \
+	socket_export=yes \
+	usb=yes
+endif
+
+ifeq ($(BUILD_VARIANT),timeservice)
+SCONS_OPTIONS += \
+	gpsdclients=yes \
+	nmea0183=yes \
+	nostrip=yes \
+	passthrough=yes \
+	shared=yes \
+	timeservice=yes \
+	usb=yes
+endif
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/gps.h $(1)/usr/include/
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libgps*.so* $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libgps.so* $(1)/usr/lib/
 	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
 	$(CP) \
-		$(PKG_INSTALL_DIR)/usr/lib/pkgconfig/libgps*.pc \
+		$(PKG_INSTALL_DIR)/usr/lib/pkgconfig/libgps.pc \
 		$(1)/usr/lib/pkgconfig/
 endef
 
@@ -127,21 +264,37 @@ define Package/gpsd/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/gpsd $(1)/usr/sbin/
 endef
 
+Package/gpsd-minimal/install = $(Package/gpsd/install)
+Package/gpsd-timeservice/install = $(Package/gpsd/install)
+
 define Package/gpsd-clients/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) \
 		$(PKG_INSTALL_DIR)/usr/bin/cgps \
-		$(PKG_INSTALL_DIR)/usr/bin/gps{ctl,decode,mon,pipe} \
+		$(PKG_INSTALL_DIR)/usr/bin/gps{2udp,ctl,decode,mon,pipe} \
 		$(PKG_INSTALL_DIR)/usr/bin/gpxlogger \
 		$(PKG_INSTALL_DIR)/usr/bin/lcdgps \
+		$(PKG_INSTALL_DIR)/usr/bin/ntpshmmon \
 		$(1)/usr/bin/
 endef
+
+Package/gpsd-clients-minimal/install = $(Package/gpsd-clients/install)
+Package/gpsd-clients-timeservice/install = $(Package/gpsd-clients/install)
 
 define Package/libgps/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libgps.so.* $(1)/usr/lib/
 endef
 
+Package/libgps-minimal/install = $(Package/libgps/install)
+Package/libgps-timeservice/install = $(Package/libgps/install)
+
 $(eval $(call BuildPackage,gpsd))
+$(eval $(call BuildPackage,gpsd-minimal))
+$(eval $(call BuildPackage,gpsd-timeservice))
 $(eval $(call BuildPackage,gpsd-clients))
+$(eval $(call BuildPackage,gpsd-clients-minimal))
+$(eval $(call BuildPackage,gpsd-clients-timeservice))
 $(eval $(call BuildPackage,libgps))
+$(eval $(call BuildPackage,libgps-minimal))
+$(eval $(call BuildPackage,libgps-timeservice))
