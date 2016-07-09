@@ -1,0 +1,42 @@
+--- a/ntptime/ntptime.c
++++ b/ntptime/ntptime.c
+@@ -74,7 +74,11 @@ main(
+ {
+ 	extern int ntp_optind;
+ 	extern char *ntp_optarg;
++#ifdef SUBST_ADJTIMEX
++	struct timex ntv;
++#else
+ 	struct ntptimeval ntv;
++#endif
+ 	struct timeval tv;
+ 	struct timex ntx, _ntx;
+ 	int	times[20];
+@@ -248,7 +252,7 @@ main(
+ #ifdef SIGSYS
+ 	if (sigsetjmp(env, 1) == 0) {
+ #endif
+-		status = ntp_adjtime(&_ntx);
++		status = adjtimex(&_ntx);
+ 		if ((status < 0) && (errno == ENOSYS))
+ 			--pll_control;
+ 		flash = _ntx.status;
+@@ -317,7 +321,7 @@ main(
+ 		printf(json ? jfmt6 : ofmt6);
+ #endif /* NTP_API */
+ 	}
+-	status = ntp_adjtime(&ntx);
++	status = adjtimex(&ntx);
+ 	if (status < 0) {
+ 		perror((errno == EPERM) ? 
+ 		   "Must be root to set kernel values\nntp_adjtime() call fails" :
+--- a/wscript
++++ b/wscript
+@@ -142,7 +142,6 @@ def build(ctx):
+ 	ctx.recurse("ntpfrob")
+ 	ctx.recurse("ntpq")
+ 	ctx.recurse("ntpkeygen")
+-	ctx.recurse("ntptime")
+ 	ctx.recurse("util")
+ 	ctx.recurse("tests")
+ 
