@@ -9,14 +9,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=NTPsec
 #PKG_VERSION:=0_9_1
-PKG_VERSION:=0.9.4-20160708
+PKG_VERSION:=0.9.4-20160726
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)_$(PKG_VERSION).tar.gz
 #PKG_SOURCE_URL:=ftp://ftp.ntpsec.org/pub/releases/
 #PKG_MD5SUM:=d1005cae1c8ff3e9316fae7fe518e2f5
 
-PKG_REV:=47fb7e7bd17f5db536ccce8b3a7e6490cfd757ed
+PKG_REV:=7e0b8675196bcd40f081c700e9c1f03c81dd0c1f
 PKG_SOURCE_URL:=https://gitlab.com/NTPsec/ntpsec.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -24,6 +24,8 @@ PKG_SOURCE_VERSION:=$(PKG_REV)
 
 PKG_BUILD_DEPENDS:=pps-tools
 #PKG_BUILD_DIR:=$(BUILD_DIR)/ntpsec-$(PKG_NAME)_$(PKG_VERSION)
+
+PKG_CONFIG_DEPENDS:=CONFIG_NTPSEC_SECCOMP
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -45,13 +47,17 @@ define Package/ntpsecd
 $(call Package/ntpsecd/Default)
   TITLE+= server
   USERID:=ntp=123:ntp=123
-  DEPENDS+= +libcap
+  DEPENDS+= +libcap +NTPSEC_SECCOMP:libseccomp
 endef
 
 define Package/ntpsecd/description
 $(call Package/ntpsecd/Default/description)
  .
  This package contains the ntpd server.
+endef
+
+define Package/ntpsecd/config
+  source "$(SOURCE)/Config.in"
 endef
 
 define Package/ntpsecdate
@@ -103,6 +109,10 @@ endef
 define Package/ntpsecd/conffiles
 /etc/ntp.conf
 endef
+
+#$(if $(CONFIG_NTPSEC_SECCOMP), \
+#	--enable-early-droproot --enable-seccomp \
+#) \
 
 define Build/Compile
 	cd $(PKG_BUILD_DIR) && \

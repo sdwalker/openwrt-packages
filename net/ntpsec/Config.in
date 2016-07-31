@@ -1,0 +1,12 @@
+menu "Configuration"
+	depends on PACKAGE_ntpsecd
+
+config NTPSEC_SECCOMP
+	bool "Enable support for seccomp in NTPsec"
+	default KERNEL_SECCOMP
+	help
+	  Build NTPsec with support for seccomp filters.
+	  Select libseccomp which also pulls-in the needed kernel features.
+
+endmenu
+
