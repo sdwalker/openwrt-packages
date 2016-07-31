@@ -1,22 +1,26 @@
---- a/libntp/machines.c
-+++ b/libntp/machines.c
-@@ -85,7 +85,7 @@ int ntp_gettime(struct ntptimeval *ntv)
- 
- 	ZERO(tntx);
- 	/* not intercepted because ntpd doesn't use this */
--	result = ntp_adjtime(&tntx);
-+	result = adjtimex(&tntx);
- 	ntv->time = tntx.time;
- 	ntv->maxerror = tntx.maxerror;
- 	ntv->esterror = tntx.esterror;
 --- a/ntpd/ntp_intercept.c
 +++ b/ntpd/ntp_intercept.c
-@@ -599,7 +599,7 @@ int intercept_ntp_adjtime(struct timex *
- 	    exit(1);
- 	}
-     } else {
--	res = ntp_adjtime(tx);
-+	res = adjtimex(tx);
+@@ -106,6 +106,10 @@ Reference-clock events are not yet inter
+ #include "ntp_syscall.h"
+ #include "ntp_leapsec.h"
  
- 	if (mode == capture)
- 	    printf("ntp_adjtime " ADJFMT " %d\n",
++#if !defined(HAVE_NTP_ADJTIME) && defined(HAVE_ADJTIMEX)
++#define ntp_adjtime adjtimex
++#endif
++
+ static intercept_mode mode = none;
+ 
+ static char linebuf[256];
+--- a/ntptime/ntptime.c
++++ b/ntptime/ntptime.c
+@@ -26,6 +26,10 @@
+ #define tv_frac_sec tv_usec
+ #endif
+ 
++#if !defined(HAVE_NTP_ADJTIME) && defined(HAVE_ADJTIMEX)
++#define ntp_adjtime adjtimex
++#endif
++
+ 
+ #define TIMEX_MOD_BITS \
+ "\20\1OFFSET\2FREQUENCY\3MAXERROR\4ESTERROR\5STATUS\6TIMECONST\
