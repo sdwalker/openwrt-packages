@@ -9,14 +9,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gpsd
 #PKG_VERSION:=3.15
-PKG_VERSION:=3.16-20160621
+PKG_VERSION:=3.16-20160729
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 #PKG_SOURCE_URL:=http://download-mirror.savannah.gnu.org/releases/gpsd/
 #PKG_MD5SUM:=afd79b87337fadf38ee2a7c4314dac79
 
-PKG_REV:=1f67f871e8755c4c7378f354e25177f10302feb6
+PKG_REV:=471e144832d5d7404f18b94289d4c0c1d56defbc
 PKG_SOURCE_URL:=git://git.sv.gnu.org/gpsd.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -275,6 +275,7 @@ define Package/gpsd-clients/install
 		$(PKG_INSTALL_DIR)/usr/bin/gpxlogger \
 		$(PKG_INSTALL_DIR)/usr/bin/lcdgps \
 		$(PKG_INSTALL_DIR)/usr/bin/ntpshmmon \
+		$(PKG_INSTALL_DIR)/usr/bin/ppscheck \
 		$(1)/usr/bin/
 endef
 
