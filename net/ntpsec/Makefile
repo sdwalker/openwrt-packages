@@ -9,14 +9,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=NTPsec
 #PKG_VERSION:=0_9_1
-PKG_VERSION:=0.9.4-20160726
+PKG_VERSION:=0.9.5-20160819
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)_$(PKG_VERSION).tar.gz
 #PKG_SOURCE_URL:=ftp://ftp.ntpsec.org/pub/releases/
 #PKG_MD5SUM:=d1005cae1c8ff3e9316fae7fe518e2f5
 
-PKG_REV:=7e0b8675196bcd40f081c700e9c1f03c81dd0c1f
+PKG_REV:=6a595816284dda226b4d8281c6cdb49e320d7f18
 PKG_SOURCE_URL:=https://gitlab.com/NTPsec/ntpsec.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -28,6 +28,7 @@ PKG_BUILD_DEPENDS:=pps-tools
 PKG_CONFIG_DEPENDS:=CONFIG_NTPSEC_SECCOMP
 
 include $(INCLUDE_DIR)/package.mk
+$(call include_mk, python-package.mk)
 
 define Package/ntpsecd/Default
   SUBMENU:=Time Synchronization
@@ -95,15 +96,39 @@ $(call Package/ntpsecd/Default/description)
  This package contains the ntpkeygen.
 endef
 
+define Package/ntpsec-python
+$(call Package/ntpsecd/Default)
+  TITLE+= Python
+endef
+
+define Package/ntpsec-python/description
+$(call Package/ntpsecd/Default/description)
+ .
+ This package contains the Python libraries.
+endef
+
 define Package/ntpsec-utils
 $(call Package/ntpsecd/Default)
   TITLE+= utilities
+  DEPENDS+= +libncursesw +libreadline
 endef
 
 define Package/ntpsec-utils/description
 $(call Package/ntpsecd/Default/description)
  .
  This package contains ntpfrob and ntpq.
+endef
+
+define Package/ntpsec-visualization
+$(call Package/ntpsecd/Default)
+  TITLE+= visualization
+  DEPENDS+= +gnuplot +ntpsec-python +python-codecs +python-light
+endef
+
+define Package/ntpsec-visualization/description
+$(call Package/ntpsecd/Default/description)
+ .
+ This package contains ntpviz.
 endef
 
 define Package/ntpsecd/conffiles
@@ -174,13 +199,27 @@ define Package/ntpseckeygen/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/ntpkeygen $(1)/usr/bin/
 endef
 
+define Package/ntpsec-python/install
+	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)
+	$(CP) \
+	    $(PKG_INSTALL_DIR)$(PYTHON_PKG_DIR)/* \
+	    $(1)$(PYTHON_PKG_DIR)
+endef
+
 define Package/ntpsec-utils/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/ntp{frob,q} $(1)/usr/bin/
+endef
+
+define Package/ntpsec-visualization/install
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/ntpviz $(1)/usr/bin/
 endef
 
 $(eval $(call BuildPackage,ntpsecd))
 $(eval $(call BuildPackage,ntpsecdate))
 $(eval $(call BuildPackage,ntpsecdig))
 $(eval $(call BuildPackage,ntpseckeygen))
+$(eval $(call BuildPackage,ntpsec-python))
 $(eval $(call BuildPackage,ntpsec-utils))
+$(eval $(call BuildPackage,ntpsec-visualization))
