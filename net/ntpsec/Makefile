@@ -9,14 +9,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=NTPsec
 #PKG_VERSION:=0_9_1
-PKG_VERSION:=0.9.5-20160819
+PKG_VERSION:=0.9.5-20160831
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)_$(PKG_VERSION).tar.gz
 #PKG_SOURCE_URL:=ftp://ftp.ntpsec.org/pub/releases/
 #PKG_MD5SUM:=d1005cae1c8ff3e9316fae7fe518e2f5
 
-PKG_REV:=6a595816284dda226b4d8281c6cdb49e320d7f18
+PKG_REV:=5a919794afc25f5a2368fad8f3a688f374304002
 PKG_SOURCE_URL:=https://gitlab.com/NTPsec/ntpsec.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -110,7 +110,6 @@ endef
 define Package/ntpsec-utils
 $(call Package/ntpsecd/Default)
   TITLE+= utilities
-  DEPENDS+= +libncursesw +libreadline
 endef
 
 define Package/ntpsec-utils/description
@@ -150,6 +149,7 @@ define Build/Compile
 	./waf configure \
 		--cross-compiler="$(TARGET_CC)" \
 		--disable-debug \
+		--disable-lineeditlibs \
 		--disable-manpage \
 		--disable-mdns-registration \
 		--enable-crypto \
