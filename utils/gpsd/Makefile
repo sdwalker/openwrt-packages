@@ -9,14 +9,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gpsd
 #PKG_VERSION:=3.15
-PKG_VERSION:=3.16-20160729
+PKG_VERSION:=3.16-20160831
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 #PKG_SOURCE_URL:=http://download-mirror.savannah.gnu.org/releases/gpsd/
 #PKG_MD5SUM:=afd79b87337fadf38ee2a7c4314dac79
 
-PKG_REV:=471e144832d5d7404f18b94289d4c0c1d56defbc
+PKG_REV:=ee329c32da0ab85e1a3334ce5377f0b57cf954ce
 PKG_SOURCE_URL:=git://git.sv.gnu.org/gpsd.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
