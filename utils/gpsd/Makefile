@@ -185,6 +185,9 @@ define Package/libgps-timeservice/description
   This package contains the libgps library in the time-service configuration.
 endef
 
+TARGET_CFLAGS += \
+	-D_GNU_SOURCE
+
 SCONS_VARS += \
 	LINKFLAGS="$(TARGET_LDFLAGS)"
 
