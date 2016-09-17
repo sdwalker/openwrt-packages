@@ -9,14 +9,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=NTPsec
 #PKG_VERSION:=0_9_1
-PKG_VERSION:=0.9.5-20160831
+PKG_VERSION:=0.9.5-20160917
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)_$(PKG_VERSION).tar.gz
 #PKG_SOURCE_URL:=ftp://ftp.ntpsec.org/pub/releases/
 #PKG_MD5SUM:=d1005cae1c8ff3e9316fae7fe518e2f5
 
-PKG_REV:=5a919794afc25f5a2368fad8f3a688f374304002
+PKG_REV:=13fa1219f94d2b9ec00ae409ac4b54ee12b1e93f
 PKG_SOURCE_URL:=https://gitlab.com/NTPsec/ntpsec.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -118,13 +118,13 @@ $(call Package/ntpsecd/Default/description)
  This package contains ntpfrob and ntpq.
 endef
 
-define Package/ntpsec-visualization
+define Package/ntpsecviz
 $(call Package/ntpsecd/Default)
-  TITLE+= visualization
+  TITLE+=viz
   DEPENDS+= +gnuplot +ntpsec-python +python-codecs +python-light
 endef
 
-define Package/ntpsec-visualization/description
+define Package/ntpsecviz/description
 $(call Package/ntpsecd/Default/description)
  .
  This package contains ntpviz.
@@ -211,7 +211,7 @@ define Package/ntpsec-utils/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/ntp{frob,q} $(1)/usr/bin/
 endef
 
-define Package/ntpsec-visualization/install
+define Package/ntpsecviz/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/ntpviz $(1)/usr/bin/
 endef
@@ -222,4 +222,4 @@ $(eval $(call BuildPackage,ntpsecdig))
 $(eval $(call BuildPackage,ntpseckeygen))
 $(eval $(call BuildPackage,ntpsec-python))
 $(eval $(call BuildPackage,ntpsec-utils))
-$(eval $(call BuildPackage,ntpsec-visualization))
+$(eval $(call BuildPackage,ntpsecviz))
