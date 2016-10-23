@@ -9,20 +9,20 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gpsd
 #PKG_VERSION:=3.15
-PKG_VERSION:=3.16-20160922
+PKG_VERSION:=3.16-20161015
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 #PKG_SOURCE_URL:=http://download-mirror.savannah.gnu.org/releases/gpsd/
 #PKG_MD5SUM:=afd79b87337fadf38ee2a7c4314dac79
 
-PKG_REV:=0baf3bb6f0db88d07838360b7955751498c65664
+PKG_REV:=ba9957de60f8a2c9985e78933dec5a060d38b664
 PKG_SOURCE_URL:=git://git.sv.gnu.org/gpsd.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_VERSION:=$(PKG_REV)
 
-PKG_MAINTAINER:=Pushpal Sidhu <psidhu@gateworks.com>
+PKG_MAINTAINER:=Pushpal Sidhu <psidhu.devel@gmail.com>
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=COPYING
 
@@ -209,7 +209,8 @@ SCONS_OPTIONS += \
 	nostrip=yes \
 	python=no \
 	implicit_link=no \
-	chrpath=no
+	chrpath=no \
+	target="$(TARGET_CROSS:-=)"
 endif
 
 ifeq ($(BUILD_VARIANT),minimal)
@@ -231,6 +232,7 @@ SCONS_OPTIONS += \
 	shared=yes \
 	shm_export=yes \
 	socket_export=yes \
+	target="$(TARGET_CROSS:-=)" \
 	usb=yes
 endif
 
@@ -241,6 +243,7 @@ SCONS_OPTIONS += \
 	nostrip=yes \
 	passthrough=yes \
 	shared=yes \
+	target="$(TARGET_CROSS:-=)" \
 	timeservice=yes \
 	usb=yes
 endif
