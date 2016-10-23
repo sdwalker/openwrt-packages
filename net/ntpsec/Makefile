@@ -9,14 +9,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=NTPsec
 #PKG_VERSION:=0_9_1
-PKG_VERSION:=0.9.5-20160925
+PKG_VERSION:=0.9.5-20161023
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)_$(PKG_VERSION).tar.gz
+PKG_SOURCE:=$(PKG_NAME)_$(PKG_VERSION).tar.xz
 #PKG_SOURCE_URL:=ftp://ftp.ntpsec.org/pub/releases/
 #PKG_MD5SUM:=d1005cae1c8ff3e9316fae7fe518e2f5
 
-PKG_REV:=99626e129ae60a6e710decc8c83cf151a4c73bb7
+PKG_REV:=f6d8eaf48fd4365a89ee68d935194cb99fe6693c
 PKG_SOURCE_URL:=https://gitlab.com/NTPsec/ntpsec.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -36,7 +36,7 @@ define Package/ntpsecd/Default
   CATEGORY:=Network
   TITLE:=NTPsec
   URL:=https://www.ntpsec.org/
-  DEPENDS:=+kmod-pps +libopenssl
+  DEPENDS:=+kmod-pps
 endef
 
 define Package/ntpsecd/Default/description
@@ -134,6 +134,8 @@ define Package/ntpsecd/conffiles
 /etc/ntp.conf
 endef
 
+TARGET_CPPFLAGS += -I$(PYTHON_INC_DIR)
+
 #$(if $(CONFIG_NTPSEC_SECCOMP), \
 #	--enable-early-droproot --enable-seccomp \
 #) \
@@ -152,7 +154,6 @@ define Build/Compile
 		--disable-lineeditlibs \
 		--disable-manpage \
 		--disable-mdns-registration \
-		--enable-crypto \
 		--prefix=/usr \
 		--refclock="shm" && \
 	./waf build_main && \

@@ -7,8 +7,8 @@ STOP=65
 USE_PROCD=1
 
 start_service() {
-	mkdir -p /var/lib/ntp
-	chown -R ntp:ntp /var/lib/ntp
+	mkdir -p /var/lib/ntp /var/log/ntpstats
+	chown -R ntp:ntp /var/lib/ntp /var/log/ntpstats
 
 	procd_open_instance
 	procd_set_param command /sbin/ntpd -g -u ntp:ntp -p /var/run/ntpd.pid -n
