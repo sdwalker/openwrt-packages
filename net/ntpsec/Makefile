@@ -9,14 +9,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=NTPsec
 #PKG_VERSION:=0_9_1
-PKG_VERSION:=0.9.5-20161023
+PKG_VERSION:=0.9.5-20161112
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)_$(PKG_VERSION).tar.xz
 #PKG_SOURCE_URL:=ftp://ftp.ntpsec.org/pub/releases/
 #PKG_MD5SUM:=d1005cae1c8ff3e9316fae7fe518e2f5
 
-PKG_REV:=f6d8eaf48fd4365a89ee68d935194cb99fe6693c
+PKG_REV:=5f72ee5bedc2834fe2c0220770d6d5df61e59e0a
 PKG_SOURCE_URL:=https://gitlab.com/NTPsec/ntpsec.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -76,7 +76,7 @@ endef
 define Package/ntpsecdig
 $(call Package/ntpsecd/Default)
   TITLE+=dig
-  DEPENDS+= +libevent2-core +libevent2-pthreads
+  DEPENDS+= +libevent2-core +libevent2-pthreads +ntpsec-python
 endef
 
 define Package/ntpsecdig/description
@@ -93,12 +93,13 @@ endef
 define Package/ntpseckeygen/description
 $(call Package/ntpsecd/Default/description)
  .
- This package contains the ntpkeygen.
+ This package contains ntpkeygen.
 endef
 
 define Package/ntpsec-python
 $(call Package/ntpsecd/Default)
   TITLE+= Python
+  DEPENDS+= +python-codecs +python-logging +python-openssl
 endef
 
 define Package/ntpsec-python/description
@@ -110,6 +111,7 @@ endef
 define Package/ntpsec-utils
 $(call Package/ntpsecd/Default)
   TITLE+= utilities
+  DEPENDS+= +ntpsec-python
 endef
 
 define Package/ntpsec-utils/description
@@ -121,7 +123,7 @@ endef
 define Package/ntpsecviz
 $(call Package/ntpsecd/Default)
   TITLE+=viz
-  DEPENDS+= +gnuplot +ntpsec-python +python-codecs +python-light
+  DEPENDS+= +gnuplot +ntpsec-python
 endef
 
 define Package/ntpsecviz/description
@@ -151,7 +153,6 @@ define Build/Compile
 	./waf configure \
 		--cross-compiler="$(TARGET_CC)" \
 		--disable-debug \
-		--disable-lineeditlibs \
 		--disable-manpage \
 		--disable-mdns-registration \
 		--prefix=/usr \
@@ -185,14 +186,17 @@ endef
 
 define Package/ntpsecdate/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/util/ntpdate $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/attic/ntpdate $(1)/usr/bin/
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/ntpdate.init $(1)/etc/init.d/ntpdate
 endef
 
 define Package/ntpsecdig/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/ntpdig $(1)/usr/bin/
+	$(INSTALL_BIN) \
+		$(PKG_INSTALL_DIR)/usr/bin/ntpdig \
+		$(PKG_BUILD_DIR)/ntpdig/pyntpdig \
+		$(1)/usr/bin/
 endef
 
 define Package/ntpseckeygen/install
@@ -205,6 +209,10 @@ define Package/ntpsec-python/install
 	$(CP) \
 	    $(PKG_INSTALL_DIR)$(PYTHON_PKG_DIR)/* \
 	    $(1)$(PYTHON_PKG_DIR)
+	$(CP) \
+	    $(PKG_INSTALL_DIR)$(PYTHON_PKG_DIR)/ntp/ntpc \
+	    $(1)$(PYTHON_PKG_DIR)/ntp/ntpc.so
+	$(RM) $(1)$(PYTHON_PKG_DIR)/ntp/ntpc
 endef
 
 define Package/ntpsec-utils/install

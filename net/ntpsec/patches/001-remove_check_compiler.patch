@@ -4,7 +4,7 @@
          for opt in opt_map:
                  ctx.env[opt] = opt_map[opt]
  
--        from wafhelpers.compiler import check_compiler
+-        from wafhelpers.check_compiler import check_compiler
 -        check_compiler(ctx)
 -
          if ctx.options.enable_rtems_trace:
