@@ -7,23 +7,22 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=NTPsec
-#PKG_VERSION:=0_9_1
-PKG_VERSION:=0.9.5-20161112
+PKG_NAME:=ntpsec
+#PKG_VERSION:=0.9.5-1
+PKG_VERSION:=0.9.6-20161211
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)_$(PKG_VERSION).tar.xz
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 #PKG_SOURCE_URL:=ftp://ftp.ntpsec.org/pub/releases/
-#PKG_MD5SUM:=d1005cae1c8ff3e9316fae7fe518e2f5
+#PKG_MD5SUM:=f067bf8a6845dd8d301735ca733662c3
 
-PKG_REV:=5f72ee5bedc2834fe2c0220770d6d5df61e59e0a
+PKG_REV:=4db1b76eec8b969fadb90c2b5dac456975b3e1b0
 PKG_SOURCE_URL:=https://gitlab.com/NTPsec/ntpsec.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_VERSION:=$(PKG_REV)
 
 PKG_BUILD_DEPENDS:=pps-tools
-#PKG_BUILD_DIR:=$(BUILD_DIR)/ntpsec-$(PKG_NAME)_$(PKG_VERSION)
 
 PKG_CONFIG_DEPENDS:=CONFIG_NTPSEC_SECCOMP
 
@@ -64,36 +63,13 @@ endef
 define Package/ntpsecdate
 $(call Package/ntpsecd/Default)
   TITLE+=date
-  DEPENDS+= +ntpsecdig
+  DEPENDS+= +ntpsec-utils
 endef
 
 define Package/ntpsecdate/description
 $(call Package/ntpsecd/Default/description)
  .
  This package contains ntpdate.
-endef
-
-define Package/ntpsecdig
-$(call Package/ntpsecd/Default)
-  TITLE+=dig
-  DEPENDS+= +libevent2-core +libevent2-pthreads +ntpsec-python
-endef
-
-define Package/ntpsecdig/description
-$(call Package/ntpsecd/Default/description)
- .
- This package contains ntpdig.
-endef
-
-define Package/ntpseckeygen
-$(call Package/ntpsecd/Default)
-  TITLE+=keygen
-endef
-
-define Package/ntpseckeygen/description
-$(call Package/ntpsecd/Default/description)
- .
- This package contains ntpkeygen.
 endef
 
 define Package/ntpsec-python
@@ -117,7 +93,7 @@ endef
 define Package/ntpsec-utils/description
 $(call Package/ntpsecd/Default/description)
  .
- This package contains ntpfrob and ntpq.
+ This package contains ntpdig, ntpfrob, ntpkeygen, ntpmon and ntpq.
 endef
 
 define Package/ntpsecviz
@@ -191,19 +167,6 @@ define Package/ntpsecdate/install
 	$(INSTALL_BIN) ./files/ntpdate.init $(1)/etc/init.d/ntpdate
 endef
 
-define Package/ntpsecdig/install
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) \
-		$(PKG_INSTALL_DIR)/usr/bin/ntpdig \
-		$(PKG_BUILD_DIR)/ntpdig/pyntpdig \
-		$(1)/usr/bin/
-endef
-
-define Package/ntpseckeygen/install
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/ntpkeygen $(1)/usr/bin/
-endef
-
 define Package/ntpsec-python/install
 	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)
 	$(CP) \
@@ -217,7 +180,9 @@ endef
 
 define Package/ntpsec-utils/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/ntp{frob,q} $(1)/usr/bin/
+	$(INSTALL_BIN) \
+		$(PKG_INSTALL_DIR)/usr/bin/ntp{dig,frob,keygen,mon,q} \
+		$(1)/usr/bin/
 endef
 
 define Package/ntpsecviz/install
@@ -227,8 +192,6 @@ endef
 
 $(eval $(call BuildPackage,ntpsecd))
 $(eval $(call BuildPackage,ntpsecdate))
-$(eval $(call BuildPackage,ntpsecdig))
-$(eval $(call BuildPackage,ntpseckeygen))
 $(eval $(call BuildPackage,ntpsec-python))
 $(eval $(call BuildPackage,ntpsec-utils))
 $(eval $(call BuildPackage,ntpsecviz))
