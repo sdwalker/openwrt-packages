@@ -1,6 +1,6 @@
 --- a/SConstruct
 +++ b/SConstruct
-@@ -760,7 +760,7 @@ else:
+@@ -751,7 +751,7 @@ else:
          confdefs.append("#define SUN_LEN(ptr) ((size_t) (((struct sockaddr_un *) 0)->sun_path) + strlen((ptr)->sun_path))\n")
          confdefs.append("#endif /* SUN_LEN */\n")
  

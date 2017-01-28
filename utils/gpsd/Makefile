@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2006-2016 OpenWrt.org
+# Copyright (C) 2006-2017 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -8,32 +8,33 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gpsd
-#PKG_VERSION:=3.15
-PKG_VERSION:=3.16-20161015
+#PKG_VERSION:=3.16
+PKG_SOURCE_DATE:=2017-01-27
+PKG_VERSION:=3.16-$(PKG_SOURCE_DATE)
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-#PKG_SOURCE_URL:=http://download-mirror.savannah.gnu.org/releases/gpsd/
-#PKG_MD5SUM:=afd79b87337fadf38ee2a7c4314dac79
+#PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
+#PKG_SOURCE_URL:=@SAVANNAH/$(PKG_NAME)
+#PKG_MD5SUM:=68691b5de4c94f82ec4062b042b5eb63
 
-PKG_REV:=ba9957de60f8a2c9985e78933dec5a060d38b664
+PKG_REV:=74aa0b67dc5f8346acef115ee516b47d58f67e5e
 PKG_SOURCE_URL:=git://git.sv.gnu.org/gpsd.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_VERSION:=$(PKG_REV)
 
 PKG_MAINTAINER:=Pushpal Sidhu <psidhu.devel@gmail.com>
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=COPYING
 
-PKG_BUILD_DEPENDS:=libncurses libusb-1.0 pps-tools
+PKG_BUILD_DEPENDS:=libncurses libusb-1.0 pps-tools python
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/scons.mk
+$(call include_mk, python-package.mk)
 
 define Package/gpsd/Default
-  DEPENDS:=+kmod-pps-ldisc +librt +libncurses
+  DEPENDS+= +kmod-pps-ldisc +libusb-1.0
   URL:=http://catb.org/gpsd/
 endef
 
@@ -49,9 +50,8 @@ endef
 
 define Package/gpsd
   $(call Package/gpsd/Default)
-  SECTION:=net
-  CATEGORY:=Network
-  DEPENDS+= +libgps +libusb-1.0
+  SECTION:=utils
+  CATEGORY:=Utilities
   TITLE:=An interface daemon for GPS receivers
   VARIANT:=full
 endef
@@ -67,9 +67,8 @@ endef
 
 define Package/gpsd-minimal
   $(call Package/gpsd/Default)
-  SECTION:=net
-  CATEGORY:=Network
-  DEPENDS+= +libgps-minimal +libusb-1.0
+  SECTION:=utils
+  CATEGORY:=Utilities
   TITLE:=An interface daemon for GPS receivers (minimal)
   VARIANT:=minimal
 endef
@@ -85,9 +84,8 @@ endef
 
 define Package/gpsd-timeservice
   $(call Package/gpsd/Default)
-  SECTION:=net
-  CATEGORY:=Network
-  DEPENDS+= +libgps-timeservice +libusb-1.0
+  SECTION:=utils
+  CATEGORY:=Utilities
   TITLE:=An interface daemon for GPS receivers (timeservice)
   VARIANT:=timeservice
 endef
@@ -103,9 +101,9 @@ endef
 
 define Package/gpsd-clients
   $(call Package/gpsd/Default)
-  SECTION:=net
-  CATEGORY:=Network
-  DEPENDS+= +libgps +libncurses +libusb-1.0
+  SECTION:=utils
+  CATEGORY:=Utilities
+  DEPENDS+= +libncurses
   TITLE:=GPS tools and clients
   VARIANT:=full
 endef
@@ -118,9 +116,9 @@ endef
 
 define Package/gpsd-clients-minimal
   $(call Package/gpsd/Default)
-  SECTION:=net
-  CATEGORY:=Network
-  DEPENDS+= +libgps-minimal +libncurses +libusb-1.0
+  SECTION:=utils
+  CATEGORY:=Utilities
+  DEPENDS+= +libncurses
   TITLE:=GPS tools and clients (minimal)
   VARIANT:=minimal
 endef
@@ -133,9 +131,9 @@ endef
 
 define Package/gpsd-clients-timeservice
   $(call Package/gpsd/Default)
-  SECTION:=net
-  CATEGORY:=Network
-  DEPENDS+= +libgps-timeservice +libncurses +libusb-1.0
+  SECTION:=utils
+  CATEGORY:=Utilities
+  DEPENDS+= +libncurses
   TITLE:=GPS tools and clients (timeservice)
   VARIANT:=timeservice
 endef
@@ -144,6 +142,45 @@ define Package/gpsd-clients-timeservice/description
   $(call Package/gpsd/Default/description)
   This package contains auxiliary tools and example clients for monitoring and
   testing the GPS daemon in the time-service configuration.
+endef
+
+define Package/gpsd-python
+  $(call Package/gpsd/Default)
+  SECTION:=utils
+  CATEGORY:=Utilities
+  DEPENDS+= +python-light
+  TITLE:=GPS Python bindings
+  VARIANT:=full
+endef
+
+define Package/gpsd-python/description
+  $(call Package/gpsd/Default/description)
+endef
+
+define Package/gpsd-python-minimal
+  $(call Package/gpsd/Default)
+  SECTION:=utils
+  CATEGORY:=Utilities
+  DEPENDS+= +python-light
+  TITLE:=GPS Python bindings (minimal)
+  VARIANT:=minimal
+endef
+
+define Package/gpsd-python-minimal/description
+  $(call Package/gpsd/Default/description)
+endef
+
+define Package/gpsd-python-timeservice
+  $(call Package/gpsd/Default)
+  SECTION:=utils
+  CATEGORY:=Utilities
+  DEPENDS+= +python-light
+  TITLE:=GPS Python bindings (timeservice)
+  VARIANT:=timeservice
+endef
+
+define Package/gpsd-python-timeservice/description
+  $(call Package/gpsd/Default/description)
 endef
 
 define Package/libgps
@@ -242,6 +279,8 @@ SCONS_OPTIONS += \
 	nmea0183=yes \
 	nostrip=yes \
 	passthrough=yes \
+	python=yes \
+	python_libdir="/usr/lib" \
 	shared=yes \
 	target="$(TARGET_CROSS:-=)" \
 	timeservice=yes \
@@ -264,8 +303,6 @@ define Package/gpsd/install
 	$(INSTALL_CONF) ./files/gpsd.config $(1)/etc/config/gpsd
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/gpsd.init $(1)/etc/init.d/gpsd
-	$(INSTALL_DIR) $(1)/etc/hotplug.d/usb
-	$(INSTALL_DATA) ./files/gpsd.hotplug $(1)/etc/hotplug.d/usb/20-gpsd
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/gpsd $(1)/usr/sbin/
 endef
@@ -288,6 +325,16 @@ endef
 Package/gpsd-clients-minimal/install = $(Package/gpsd-clients/install)
 Package/gpsd-clients-timeservice/install = $(Package/gpsd-clients/install)
 
+define Package/gpsd-python/install
+	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)
+	$(CP) \
+	    $(PKG_INSTALL_DIR)/usr/lib/gps/* \
+	    $(1)$(PYTHON_PKG_DIR)
+endef
+
+Package/gpsd-python-minimal/install = $(Package/gpsd-python/install)
+Package/gpsd-python-timeservice/install = $(Package/gpsd-python/install)
+
 define Package/libgps/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libgps.so.* $(1)/usr/lib/
@@ -302,6 +349,9 @@ $(eval $(call BuildPackage,gpsd-timeservice))
 $(eval $(call BuildPackage,gpsd-clients))
 $(eval $(call BuildPackage,gpsd-clients-minimal))
 $(eval $(call BuildPackage,gpsd-clients-timeservice))
+$(eval $(call BuildPackage,gpsd-python))
+$(eval $(call BuildPackage,gpsd-python-minimal))
+$(eval $(call BuildPackage,gpsd-python-timeservice))
 $(eval $(call BuildPackage,libgps))
 $(eval $(call BuildPackage,libgps-minimal))
 $(eval $(call BuildPackage,libgps-timeservice))
