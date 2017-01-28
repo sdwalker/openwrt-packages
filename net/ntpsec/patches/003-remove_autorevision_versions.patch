@@ -1,0 +1,25 @@
+--- a/ntpd/ntpd.c
++++ b/ntpd/ntpd.c
+@@ -485,7 +485,7 @@ const char *ntpd_version(void)
+ {
+     static char versionbuf[64];
+     snprintf(versionbuf, sizeof(versionbuf),
+-	     "ntpd %s-%s+%d %s", VCS_BASENAME, VERSION, VCS_TICK, VCS_DATE);
++	     "ntpd %s", VERSION);
+     return versionbuf;
+ }
+ 
+--- a/pylib/util.py
++++ b/pylib/util.py
+@@ -31,10 +31,7 @@ OLD_CTL_PST_SEL_SYSPEER = 3
+ 
+ 
+ def stdversion():
+-    return "%s-%s+%s %s" % (ntp.version.VCS_BASENAME,
+-                            ntp.version.VERSION,
+-                            ntp.version.VCS_TICK,
+-                            ntp.version.VCS_DATE)
++    return "%s" % (ntp.version.VERSION)
+ 
+ 
+ def rfc3339(t):

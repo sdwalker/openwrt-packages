@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2016 OpenWrt.org
+# Copyright (C) 2016-2017 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -9,17 +9,17 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ntpsec
 #PKG_VERSION:=0.9.5-1
-PKG_VERSION:=0.9.6-20161211
+PKG_SOURCE_DATE:=2017-01-28
+PKG_VERSION:=0.9.6-$(PKG_SOURCE_DATE)
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
+#PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 #PKG_SOURCE_URL:=ftp://ftp.ntpsec.org/pub/releases/
 #PKG_MD5SUM:=f067bf8a6845dd8d301735ca733662c3
 
-PKG_REV:=4db1b76eec8b969fadb90c2b5dac456975b3e1b0
+PKG_REV:=b77916ac622aae78c02984e2180eca0b35963fd1
 PKG_SOURCE_URL:=https://gitlab.com/NTPsec/ntpsec.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_VERSION:=$(PKG_REV)
 
 PKG_BUILD_DEPENDS:=pps-tools
@@ -47,7 +47,7 @@ define Package/ntpsecd
 $(call Package/ntpsecd/Default)
   TITLE+= server
   USERID:=ntp=123:ntp=123
-  DEPENDS+= +libcap +NTPSEC_SECCOMP:libseccomp
+  DEPENDS+= +libcap +libopenssl +NTPSEC_SECCOMP:libseccomp
 endef
 
 define Package/ntpsecd/description
@@ -70,6 +70,18 @@ define Package/ntpsecdate/description
 $(call Package/ntpsecd/Default/description)
  .
  This package contains ntpdate.
+endef
+
+define Package/ntpsecmon
+$(call Package/ntpsecd/Default)
+  TITLE+=mon
+  DEPENDS+= +ntpsec-utils +python-ncurses
+endef
+
+define Package/ntpsecmon/description
+$(call Package/ntpsecd/Default/description)
+ .
+ This package contains ntpmon.
 endef
 
 define Package/ntpsec-python
@@ -167,6 +179,11 @@ define Package/ntpsecdate/install
 	$(INSTALL_BIN) ./files/ntpdate.init $(1)/etc/init.d/ntpdate
 endef
 
+define Package/ntpsecmon/install
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/ntpmon $(1)/usr/bin/
+endef
+
 define Package/ntpsec-python/install
 	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)
 	$(CP) \
@@ -181,7 +198,7 @@ endef
 define Package/ntpsec-utils/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) \
-		$(PKG_INSTALL_DIR)/usr/bin/ntp{dig,frob,keygen,mon,q} \
+		$(PKG_INSTALL_DIR)/usr/bin/ntp{dig,frob,keygen,q} \
 		$(1)/usr/bin/
 endef
 
@@ -192,6 +209,7 @@ endef
 
 $(eval $(call BuildPackage,ntpsecd))
 $(eval $(call BuildPackage,ntpsecdate))
+$(eval $(call BuildPackage,ntpsecmon))
 $(eval $(call BuildPackage,ntpsec-python))
 $(eval $(call BuildPackage,ntpsec-utils))
 $(eval $(call BuildPackage,ntpsecviz))

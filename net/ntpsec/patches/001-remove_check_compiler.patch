@@ -1,12 +1,12 @@
 --- a/wafhelpers/configure.py
 +++ b/wafhelpers/configure.py
-@@ -54,9 +54,6 @@ def cmd_configure(ctx, config):
-         for opt in opt_map:
-                 ctx.env[opt] = opt_map[opt]
+@@ -61,9 +61,6 @@ def cmd_configure(ctx, config):
+     for opt in opt_map:
+         ctx.env[opt] = opt_map[opt]
  
--        from wafhelpers.check_compiler import check_compiler
--        check_compiler(ctx)
+-    from wafhelpers.check_compiler import check_compiler
+-    check_compiler(ctx)
 -
-         if ctx.options.enable_rtems_trace:
-                 ctx.find_program("rtems-tld", var="BIN_RTEMS_TLD", path_list=[ctx.options.rtems_trace_path, ctx.env.BINDIR])
-                 ctx.env.RTEMS_TEST_ENABLE = True
+     if ctx.options.enable_rtems_trace:
+         ctx.find_program("rtems-tld", var="BIN_RTEMS_TLD",
+                          path_list=[ctx.options.rtems_trace_path,
