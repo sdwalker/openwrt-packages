@@ -1,6 +1,6 @@
 --- a/ntpd/ntpd.c
 +++ b/ntpd/ntpd.c
-@@ -485,7 +485,7 @@ const char *ntpd_version(void)
+@@ -471,7 +471,7 @@ const char *ntpd_version(void)
  {
      static char versionbuf[64];
      snprintf(versionbuf, sizeof(versionbuf),
