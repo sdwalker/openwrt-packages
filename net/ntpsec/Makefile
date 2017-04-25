@@ -9,15 +9,15 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ntpsec
 #PKG_VERSION:=0.9.5-1
-PKG_SOURCE_DATE:=2017-02-05
-PKG_VERSION:=0.9.6-$(PKG_SOURCE_DATE)
+PKG_SOURCE_DATE:=2017-04-24
+PKG_VERSION:=0.9.7-$(PKG_SOURCE_DATE)
 PKG_RELEASE:=1
 
 #PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 #PKG_SOURCE_URL:=ftp://ftp.ntpsec.org/pub/releases/
 #PKG_MD5SUM:=f067bf8a6845dd8d301735ca733662c3
 
-PKG_REV:=68053b017a954b7d37279cbe5fec279841ba7d82
+PKG_REV:=564ad5317737111e0ddcbf27f0a2c0f6729184bb
 PKG_SOURCE_URL:=https://gitlab.com/NTPsec/ntpsec.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=$(PKG_REV)
@@ -139,6 +139,7 @@ define Build/Compile
 	cd $(PKG_BUILD_DIR) && \
 	$(CONFIGURE_VARS) \
 	./waf configure \
+		--build-epoch="$(SOURCE_DATE_EPOCH)" \
 		--cross-compiler="$(TARGET_CC)" \
 		--disable-debug \
 		--disable-manpage \

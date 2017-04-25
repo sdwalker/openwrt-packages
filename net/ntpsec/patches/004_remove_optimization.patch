@@ -1,0 +1,12 @@
+--- a/wafhelpers/configure.py
++++ b/wafhelpers/configure.py
+@@ -351,8 +351,7 @@ def cmd_configure(ctx, config):
+             ]
+ 
+     ctx.env.CFLAGS = [
+-        # -O1 will turn on -D_FORTIFY_SOURCE=2 for us
+-        "-O1",
++        "-D_FORTIFY_SOURCE=2",
+         "-Wall",
+         "-Wextra",
+         "-Wmissing-prototypes",
