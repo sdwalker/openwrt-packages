@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gpsd
 #PKG_VERSION:=3.16
-PKG_SOURCE_DATE:=2017-04-14
+PKG_SOURCE_DATE:=2017-08-15
 PKG_VERSION:=3.17-$(PKG_SOURCE_DATE)
 PKG_RELEASE:=1
 
@@ -17,7 +17,7 @@ PKG_RELEASE:=1
 #PKG_SOURCE_URL:=@SAVANNAH/$(PKG_NAME)
 #PKG_MD5SUM:=68691b5de4c94f82ec4062b042b5eb63
 
-PKG_REV:=1fa223fd7e652d1f6a9cb5a4d8b622cf5a4441b6
+PKG_REV:=2e7249635b0d3644bab1e2d04ad83ce56b026073
 PKG_SOURCE_URL:=git://git.sv.gnu.org/gpsd.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=$(PKG_REV)
@@ -247,6 +247,7 @@ SCONS_OPTIONS += \
 	python=no \
 	implicit_link=no \
 	chrpath=no \
+	manbuild=no \
 	target="$(TARGET_CROSS:-=)"
 endif
 
