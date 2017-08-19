@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ntpsec
 #PKG_VERSION:=0.9.5-1
-PKG_SOURCE_DATE:=2017-04-24
+PKG_SOURCE_DATE:=2017-08-19
 PKG_VERSION:=0.9.7-$(PKG_SOURCE_DATE)
 PKG_RELEASE:=1
 
@@ -17,7 +17,7 @@ PKG_RELEASE:=1
 #PKG_SOURCE_URL:=ftp://ftp.ntpsec.org/pub/releases/
 #PKG_MD5SUM:=f067bf8a6845dd8d301735ca733662c3
 
-PKG_REV:=564ad5317737111e0ddcbf27f0a2c0f6729184bb
+PKG_REV:=10b077af440317800332006358eb591379fa0509
 PKG_SOURCE_URL:=https://gitlab.com/NTPsec/ntpsec.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=$(PKG_REV)
@@ -126,10 +126,6 @@ endef
 
 TARGET_CPPFLAGS += -I$(PYTHON_INC_DIR)
 
-#$(if $(CONFIG_NTPSEC_SECCOMP), \
-#	--enable-early-droproot --enable-seccomp \
-#) \
-
 define Build/Compile
 	cd $(PKG_BUILD_DIR) && \
 	$(HOST_CONFIGURE_VARS) \
@@ -144,6 +140,9 @@ define Build/Compile
 		--disable-debug \
 		--disable-manpage \
 		--disable-mdns-registration \
+$(if $(CONFIG_NTPSEC_SECCOMP), \
+		--enable-seccomp \
+) \
 		--prefix=/usr \
 		--refclock="shm" && \
 	./waf build_main && \
