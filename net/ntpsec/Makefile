@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ntpsec
 #PKG_VERSION:=0.9.5-1
-PKG_SOURCE_DATE:=2017-08-19
+PKG_SOURCE_DATE:=2017-09-27
 PKG_VERSION:=0.9.7-$(PKG_SOURCE_DATE)
 PKG_RELEASE:=1
 
@@ -17,7 +17,7 @@ PKG_RELEASE:=1
 #PKG_SOURCE_URL:=ftp://ftp.ntpsec.org/pub/releases/
 #PKG_MD5SUM:=f067bf8a6845dd8d301735ca733662c3
 
-PKG_REV:=10b077af440317800332006358eb591379fa0509
+PKG_REV:=5d571e629ac3885f82ddb5895b5ab882a231c436
 PKG_SOURCE_URL:=https://gitlab.com/NTPsec/ntpsec.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=$(PKG_REV)
@@ -146,7 +146,8 @@ $(if $(CONFIG_NTPSEC_SECCOMP), \
 		--prefix=/usr \
 		--refclock="shm" && \
 	./waf build_main && \
-	DESTDIR="$(PKG_INSTALL_DIR)" ./waf install_main
+	./waf install_main \
+		--destdir="$(PKG_INSTALL_DIR)"
 endef
 
 define Package/ntpsecd/install
