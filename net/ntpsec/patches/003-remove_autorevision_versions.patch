@@ -11,10 +11,10 @@
  
 --- a/pylib/util.py
 +++ b/pylib/util.py
-@@ -79,9 +79,7 @@ def safeargcast(arg, castfunc, errtext,
- 
+@@ -95,9 +95,7 @@ def safeargcast(arg, castfunc, errtext,
  
  def stdversion():
+     "Returns the NTPsec version string in a standard format"
 -    return "ntpsec-%s+%s %s" % (ntp.version.VERSION,
 -                                ntp.version.VCS_TICK,
 -                                ntp.version.VCS_DATE)
