@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gpsd
 #PKG_VERSION:=3.16
-PKG_SOURCE_DATE:=2017-09-19
+PKG_SOURCE_DATE:=2018-03-29
 PKG_VERSION:=3.18-$(PKG_SOURCE_DATE)
 PKG_RELEASE:=1
 
@@ -17,7 +17,7 @@ PKG_RELEASE:=1
 #PKG_SOURCE_URL:=@SAVANNAH/$(PKG_NAME)
 #PKG_HASH:=03579af13a4d3fe0c5b79fa44b5f75c9f3cac6749357f1d99ce5d38c09bc2029
 
-PKG_REV:=531402341ca69fb4833bbe167d542a53d01fa71f
+PKG_REV:=9429b1a5498e0e1ea68d5e53245c897dda52e5aa
 PKG_SOURCE_URL:=git://git.sv.gnu.org/gpsd.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=$(PKG_REV)
@@ -26,12 +26,12 @@ PKG_MAINTAINER:=Pushpal Sidhu <psidhu.devel@gmail.com>
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=COPYING
 
-PKG_BUILD_DEPENDS:=libncurses libusb-1.0 pps-tools python
+PKG_BUILD_DEPENDS:=ncurses libusb pps-tools python
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/scons.mk
-$(call include_mk, python-package.mk)
+include ../../lang/python/python-package.mk
 
 define Package/gpsd/Default
   DEPENDS+= +kmod-pps-ldisc +libusb-1.0
@@ -284,6 +284,7 @@ SCONS_OPTIONS += \
 	python_libdir="/usr/lib" \
 	shared=yes \
 	target="$(TARGET_CROSS:-=)" \
+	target_python="$(PYTHON)" \
 	timeservice=yes \
 	usb=yes
 endif

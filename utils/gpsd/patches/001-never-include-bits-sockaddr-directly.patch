@@ -1,6 +1,6 @@
 --- a/SConstruct
 +++ b/SConstruct
-@@ -755,7 +755,7 @@ else:
+@@ -774,7 +774,7 @@ else:
                          "+ strlen((ptr)->sun_path))\n")
          confdefs.append("#endif /* SUN_LEN */\n")
  
