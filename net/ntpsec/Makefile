@@ -9,15 +9,15 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ntpsec
 #PKG_VERSION:=0.9.5-1
-PKG_SOURCE_DATE:=2017-12-30
-PKG_VERSION:=1.0.0-$(PKG_SOURCE_DATE)
+PKG_SOURCE_DATE:=2018-04-08
+PKG_VERSION:=1.1.0-$(PKG_SOURCE_DATE)
 PKG_RELEASE:=1
 
 #PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 #PKG_SOURCE_URL:=ftp://ftp.ntpsec.org/pub/releases/
 #PKG_MD5SUM:=f067bf8a6845dd8d301735ca733662c3
 
-PKG_REV:=ad49acaca77b274692b4e8271788e6c22d302765
+PKG_REV:=861012e34b983bdaf2ec1c9567862669cd67d503
 PKG_SOURCE_URL:=https://gitlab.com/NTPsec/ntpsec.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=$(PKG_REV)
@@ -27,7 +27,7 @@ PKG_BUILD_DEPENDS:=pps-tools
 PKG_CONFIG_DEPENDS:=CONFIG_NTPSEC_SECCOMP
 
 include $(INCLUDE_DIR)/package.mk
-$(call include_mk, python-package.mk)
+include ../../lang/python/python-package.mk
 
 define Package/ntpsecd/Default
   SUBMENU:=Time Synchronization
