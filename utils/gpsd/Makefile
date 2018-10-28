@@ -8,17 +8,18 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gpsd
-#PKG_VERSION:=3.16
-PKG_SOURCE_DATE:=2018-03-29
-PKG_VERSION:=3.18-$(PKG_SOURCE_DATE)
+#PKG_VERSION:=3.17
+PKG_SOURCE_DATE:=2018-10-16
+PKG_VERSION:=3.19-$(PKG_SOURCE_DATE)
 PKG_RELEASE:=1
 
 #PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 #PKG_SOURCE_URL:=@SAVANNAH/$(PKG_NAME)
-#PKG_HASH:=03579af13a4d3fe0c5b79fa44b5f75c9f3cac6749357f1d99ce5d38c09bc2029
+#PKG_HASH:=68e0dbecfb5831997f8b3d6ba48aed812eb465d8c0089420ab68f9ce4d85e77a
 
-PKG_REV:=9429b1a5498e0e1ea68d5e53245c897dda52e5aa
+PKG_REV:=91cff1b621e3b7f3630d07bc509acfed2d83973d
 PKG_SOURCE_URL:=git://git.sv.gnu.org/gpsd.git
+PKG_MIRROR_HASH:=fb5943d5fa977f38cc985785914f6cd4d12ccd22b8d57f1e522f76bf178db1a1
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=$(PKG_REV)
 
@@ -277,6 +278,7 @@ endif
 ifeq ($(BUILD_VARIANT),timeservice)
 SCONS_OPTIONS += \
 	gpsdclients=yes \
+	mtk3301=no \
 	nmea0183=yes \
 	nostrip=yes \
 	passthrough=yes \
@@ -286,6 +288,7 @@ SCONS_OPTIONS += \
 	target="$(TARGET_CROSS:-=)" \
 	target_python="$(PYTHON)" \
 	timeservice=yes \
+	ublox=no \
 	usb=yes
 endif
 
