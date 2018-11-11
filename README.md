@@ -1,1 +1,1 @@
-# lede-packages
+# openwrt-packages
