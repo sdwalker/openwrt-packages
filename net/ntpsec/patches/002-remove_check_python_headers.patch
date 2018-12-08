@@ -1,6 +1,6 @@
 --- a/pylib/wscript
 +++ b/pylib/wscript
-@@ -4,9 +4,7 @@ def options(opt):
+@@ -7,9 +7,7 @@ def options(opt):
  
  def configure(conf):
      conf.load('python')
@@ -8,6 +8,6 @@
 -        conf.check_python_version((2, 6, 0))
 -    conf.check_python_headers(features='pyext')  # Extension-only, no embedded
 +    conf.check_python_version((2, 6, 0))
- 
- 
- def build(ctx):
+     try:
+         conf.check_python_module('curses')
+         conf.env['PYTHON_CURSES'] = True

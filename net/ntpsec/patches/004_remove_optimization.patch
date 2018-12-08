@@ -1,6 +1,6 @@
 --- a/wscript
 +++ b/wscript
-@@ -399,8 +399,7 @@ def configure(ctx):
+@@ -400,8 +400,7 @@ def configure(ctx):
              ]
  
      ctx.env.CFLAGS = [

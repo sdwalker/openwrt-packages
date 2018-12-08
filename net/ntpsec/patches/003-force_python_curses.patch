@@ -1,0 +1,16 @@
+--- a/pylib/wscript
++++ b/pylib/wscript
+@@ -8,12 +8,7 @@ def options(opt):
+ def configure(conf):
+     conf.load('python')
+     conf.check_python_version((2, 6, 0))
+-    try:
+-        conf.check_python_module('curses')
+-        conf.env['PYTHON_CURSES'] = True
+-    except conf.errors.ConfigurationError:
+-        pprint("YELLOW", "WARNING: ntpmon will not be built/installed since "
+-               "python curses module was not found")
++    conf.env['PYTHON_CURSES'] = True
+ 
+ 
+ def build(ctx):
