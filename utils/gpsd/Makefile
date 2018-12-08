@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gpsd
 #PKG_VERSION:=3.18.1
-PKG_SOURCE_DATE:=2018-11-09
+PKG_SOURCE_DATE:=2018-12-04
 PKG_VERSION:=3.19-$(PKG_SOURCE_DATE)
 PKG_RELEASE:=1
 
@@ -17,9 +17,9 @@ PKG_RELEASE:=1
 #PKG_SOURCE_URL:=@SAVANNAH/$(PKG_NAME)
 #PKG_HASH:=5cb1e6d880ec9a52c62492dd0e3d77451b7c7ad625895bd652f6354215aec23e
 
-PKG_REV:=4e132a9d5be022aa570eba49f08b29797a0c139e
+PKG_REV:=0dd4c269e818cb0cb554510bbf0dc4168d660b29
 PKG_SOURCE_URL:=git://git.sv.gnu.org/gpsd.git
-PKG_MIRROR_HASH:=fb5943d5fa977f38cc985785914f6cd4d12ccd22b8d57f1e522f76bf178db1a1
+PKG_MIRROR_HASH:=6138b1c7cc9fc3ec81bf6a21b61252992e77b6df4f1fd37fb1184e1dcff2f873
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=$(PKG_REV)
 
@@ -224,7 +224,8 @@ define Package/libgps-timeservice/description
 endef
 
 TARGET_CFLAGS += \
-	-D_GNU_SOURCE
+	-D_GNU_SOURCE \
+	-I$(PYTHON_INC_DIR)
 
 SCONS_VARS += \
 	LINKFLAGS="$(TARGET_LDFLAGS)"
@@ -331,10 +332,10 @@ Package/gpsd-clients-minimal/install = $(Package/gpsd-clients/install)
 Package/gpsd-clients-timeservice/install = $(Package/gpsd-clients/install)
 
 define Package/gpsd-python/install
-	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)
+	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)/gps
 	$(CP) \
 	    $(PKG_INSTALL_DIR)/usr/lib/gps/* \
-	    $(1)$(PYTHON_PKG_DIR)
+	    $(1)$(PYTHON_PKG_DIR)/gps
 endef
 
 Package/gpsd-python-minimal/install = $(Package/gpsd-python/install)

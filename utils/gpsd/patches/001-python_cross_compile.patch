@@ -1,0 +1,55 @@
+Index: gpsd-3.19-2018-12-04/SConstruct
+===================================================================
+--- gpsd-3.19-2018-12-04.orig/SConstruct
++++ gpsd-3.19-2018-12-04/SConstruct
+@@ -1491,50 +1491,6 @@ else:
+     }
+ 
+     python_env = env.Clone()
+-    # FIXME: build of python wrappers doesn't pickup flags set for coveraging,
+-    # manually add them here
+-    if env['coveraging']:
+-        python_config['BASECFLAGS'] += ' -coverage'
+-        python_config['LDFLAGS'] += ' -coverage'
+-        python_config['LDSHARED'] += ' -coverage'
+-    # in case CC/CXX was set to the scan-build wrapper,
+-    # ensure that we build the python modules with scan-build, too
+-    if env['CC'] is None or env['CC'].find('scan-build') < 0:
+-        python_env['CC'] = python_config['CC']
+-        # As we seem to be changing compilers we must assume that the
+-        # CCFLAGS are incompatible with the new compiler. If we should
+-        # use other flags, the variable or the variable for this
+-        # should be predefined.
+-        if python_config['CC'].split()[0] != env['CC']:
+-            python_env['CCFLAGS'] = ''
+-    else:
+-        python_env['CC'] = (' '.join([env['CC']] +
+-                            python_config['CC'].split()[1:]))
+-    if env['CXX'] is None or env['CXX'].find('scan-build') < 0:
+-        python_env['CXX'] = python_config['CXX']
+-        # As we seem to be changing compilers we must assume that the
+-        # CCFLAGS or CXXFLAGS are incompatible with the new
+-        # compiler. If we should use other flags, the variable or the
+-        # variable for this should be predefined.
+-        if python_config['CXX'].split()[0] != env['CXX']:
+-            python_env['CCFLAGS'] = ''
+-            python_env['CXXFLAGS'] = ''
+-    else:
+-        python_env['CXX'] = (' '.join([env['CXX']] +
+-                             python_config['CXX'].split()[1:]))
+-
+-    ldshared = python_config['LDSHARED']
+-    ldshared = ldshared.replace('-fPIE', '')
+-    ldshared = ldshared.replace('-pie', '')
+-    python_env.Replace(SHLINKFLAGS=[],
+-                       LDFLAGS=python_config['LDFLAGS'],
+-                       LINK=ldshared,
+-                       SHLIBPREFIX="",
+-                       SHLIBSUFFIX=python_config['SO'],
+-                       CPPPATH=[python_config['INCLUDEPY']],
+-                       CPPFLAGS=python_config['OPT'],
+-                       CFLAGS=python_config['BASECFLAGS'],
+-                       CXXFLAGS=python_config['BASECFLAGS'])
+ 
+     python_objects = {}
+     python_compiled_libs = {}
