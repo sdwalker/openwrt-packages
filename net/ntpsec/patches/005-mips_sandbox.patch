@@ -1,6 +1,6 @@
 --- a/ntpd/ntp_sandbox.c
 +++ b/ntpd/ntp_sandbox.c
-@@ -420,13 +420,22 @@ int scmp_sc[] = {
+@@ -426,13 +426,20 @@ int scmp_sc[] = {
  	/* gentoo 64-bit and 32-bit, Intel and Arm use mmap */
  	SCMP_SYS(mmap),
  #endif
@@ -19,8 +19,6 @@
 +#ifdef __mips__
 +	SCMP_SYS(ipc),
 +	SCMP_SYS(readv),
-+	SCMP_SYS(timer_create),
-+	SCMP_SYS(timer_settime),
 +	SCMP_SYS(writev),
 +#endif
  };
