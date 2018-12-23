@@ -1,6 +1,6 @@
 --- a/SConstruct
 +++ b/SConstruct
-@@ -719,6 +719,10 @@ else:
+@@ -723,6 +723,10 @@ else:
                  ncurseslibs += pkg_config('tinfo', rpath_hack=True)
          # It's not yet known whether rpath_hack is appropriate for
          # ncurses5-config.

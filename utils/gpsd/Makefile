@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gpsd
 #PKG_VERSION:=3.18.1
-PKG_SOURCE_DATE:=2018-12-04
+PKG_SOURCE_DATE:=2018-12-22
 PKG_VERSION:=3.19-$(PKG_SOURCE_DATE)
 PKG_RELEASE:=1
 
@@ -17,9 +17,9 @@ PKG_RELEASE:=1
 #PKG_SOURCE_URL:=@SAVANNAH/$(PKG_NAME)
 #PKG_HASH:=5cb1e6d880ec9a52c62492dd0e3d77451b7c7ad625895bd652f6354215aec23e
 
-PKG_REV:=0dd4c269e818cb0cb554510bbf0dc4168d660b29
+PKG_REV:=e4779bf305a270380f4a33be77fb6200deb11517
 PKG_SOURCE_URL:=git://git.sv.gnu.org/gpsd.git
-PKG_MIRROR_HASH:=6138b1c7cc9fc3ec81bf6a21b61252992e77b6df4f1fd37fb1184e1dcff2f873
+PKG_MIRROR_HASH:=69fa9a12d88269b4e313b97d2f0d76d28c3b9c9ef87a8717cb4bd7b7a6e9418d
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=$(PKG_REV)
 
@@ -335,7 +335,7 @@ define Package/gpsd-python/install
 	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)/gps
 	$(CP) \
 	    $(PKG_INSTALL_DIR)/usr/lib/gps/* \
-	    $(1)$(PYTHON_PKG_DIR)/gps
+	    $(1)$(PYTHON_PKG_DIR)/gps/
 endef
 
 Package/gpsd-python-minimal/install = $(Package/gpsd-python/install)

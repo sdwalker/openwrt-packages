@@ -1,8 +1,6 @@
-Index: gpsd-3.19-2018-12-04/SConstruct
-===================================================================
---- gpsd-3.19-2018-12-04.orig/SConstruct
-+++ gpsd-3.19-2018-12-04/SConstruct
-@@ -1491,50 +1491,6 @@ else:
+--- a/SConstruct
++++ b/SConstruct
+@@ -1487,50 +1487,6 @@ else:
      }
  
      python_env = env.Clone()
