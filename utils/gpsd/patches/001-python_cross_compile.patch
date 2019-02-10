@@ -1,6 +1,6 @@
 --- a/SConstruct
 +++ b/SConstruct
-@@ -1487,50 +1487,6 @@ else:
+@@ -1510,50 +1510,6 @@ else:
      }
  
      python_env = env.Clone()

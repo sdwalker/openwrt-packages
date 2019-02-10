@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gpsd
 #PKG_VERSION:=3.18.1
-PKG_SOURCE_DATE:=2018-12-22
+PKG_SOURCE_DATE:=2019-02-07
 PKG_VERSION:=3.19-$(PKG_SOURCE_DATE)
 PKG_RELEASE:=1
 
@@ -17,9 +17,9 @@ PKG_RELEASE:=1
 #PKG_SOURCE_URL:=@SAVANNAH/$(PKG_NAME)
 #PKG_HASH:=5cb1e6d880ec9a52c62492dd0e3d77451b7c7ad625895bd652f6354215aec23e
 
-PKG_REV:=e4779bf305a270380f4a33be77fb6200deb11517
+PKG_REV:=50c1b0612415a82f752f122ffbdf4df1c710c5ce
 PKG_SOURCE_URL:=git://git.sv.gnu.org/gpsd.git
-PKG_MIRROR_HASH:=69fa9a12d88269b4e313b97d2f0d76d28c3b9c9ef87a8717cb4bd7b7a6e9418d
+PKG_MIRROR_HASH:=ac2161dd9a89a3f33e981137449e74224d2309ef2d4c93492f7f84f8b45e72ba
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=$(PKG_REV)
 
@@ -189,6 +189,7 @@ define Package/libgps
   SECTION:=libs
   CATEGORY:=Libraries
   TITLE:=C service library for communicating with the GPS daemon
+  ABI_VERSION:=25
   VARIANT:=full
 endef
 
@@ -202,6 +203,7 @@ define Package/libgps-minimal
   SECTION:=libs
   CATEGORY:=Libraries
   TITLE:=C service library for communicating with the GPS daemon (minimal)
+  ABI_VERSION:=25
   VARIANT:=minimal
 endef
 
@@ -215,6 +217,7 @@ define Package/libgps-timeservice
   SECTION:=libs
   CATEGORY:=Libraries
   TITLE:=C service library for communicating with the GPS daemon (timeservice)
+  ABI_VERSION:=25
   VARIANT:=timeservice
 endef
 
