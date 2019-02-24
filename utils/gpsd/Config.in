@@ -1,0 +1,15 @@
+menu "Configuration"
+	depends on (PACKAGE_gpsd || PACKAGE_gpsd-minimal || PACKAGE_gpsd-timeservice)
+
+choice
+	prompt "Python version"
+	default GPSD_PYTHON
+
+	config GPSD_PYTHON
+		bool "2"
+
+	config GPSD_PYTHON3
+		bool "3"
+endchoice
+
+endmenu

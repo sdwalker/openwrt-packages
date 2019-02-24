@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gpsd
 #PKG_VERSION:=3.18.1
-PKG_SOURCE_DATE:=2019-02-07
+PKG_SOURCE_DATE:=2019-02-23
 PKG_VERSION:=3.19-$(PKG_SOURCE_DATE)
 PKG_RELEASE:=1
 
@@ -17,7 +17,7 @@ PKG_RELEASE:=1
 #PKG_SOURCE_URL:=@SAVANNAH/$(PKG_NAME)
 #PKG_HASH:=5cb1e6d880ec9a52c62492dd0e3d77451b7c7ad625895bd652f6354215aec23e
 
-PKG_REV:=50c1b0612415a82f752f122ffbdf4df1c710c5ce
+PKG_REV:=a57d8dba4ddbd22110fc75294b31fe4825627154
 PKG_SOURCE_URL:=git://git.sv.gnu.org/gpsd.git
 PKG_MIRROR_HASH:=ac2161dd9a89a3f33e981137449e74224d2309ef2d4c93492f7f84f8b45e72ba
 PKG_SOURCE_PROTO:=git
@@ -27,12 +27,15 @@ PKG_MAINTAINER:=Pushpal Sidhu <psidhu.devel@gmail.com>
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=COPYING
 
-PKG_BUILD_DEPENDS:=ncurses libusb pps-tools python
+PKG_BUILD_DEPENDS:=ncurses libusb pps-tools python python3
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
+
+PKG_CONFIG_DEPENDS:=CONFIG_GPSD_PYTHON
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/scons.mk
 include ../../lang/python/python-package.mk
+include ../../lang/python/python3-package.mk
 
 define Package/gpsd/Default
   DEPENDS+= +kmod-pps-ldisc +libusb-1.0
@@ -184,6 +187,45 @@ define Package/gpsd-python-timeservice/description
   $(call Package/gpsd/Default/description)
 endef
 
+define Package/gpsd-python3
+  $(call Package/gpsd/Default)
+  SECTION:=utils
+  CATEGORY:=Utilities
+  DEPENDS+= +python3-light
+  TITLE:=GPS Python3 bindings
+  VARIANT:=full
+endef
+
+define Package/gpsd-python3/description
+  $(call Package/gpsd/Default/description)
+endef
+
+define Package/gpsd-python3-minimal
+  $(call Package/gpsd/Default)
+  SECTION:=utils
+  CATEGORY:=Utilities
+  DEPENDS+= +python3-light
+  TITLE:=GPS Python3 bindings (minimal)
+  VARIANT:=minimal
+endef
+
+define Package/gpsd-python3-minimal/description
+  $(call Package/gpsd/Default/description)
+endef
+
+define Package/gpsd-python3-timeservice
+  $(call Package/gpsd/Default)
+  SECTION:=utils
+  CATEGORY:=Utilities
+  DEPENDS+= +python3-light
+  TITLE:=GPS Python3 bindings (timeservice)
+  VARIANT:=timeservice
+endef
+
+define Package/gpsd-python3-timeservice/description
+  $(call Package/gpsd/Default/description)
+endef
+
 define Package/libgps
   $(call Package/gpsd/Default)
   SECTION:=libs
@@ -227,8 +269,15 @@ define Package/libgps-timeservice/description
 endef
 
 TARGET_CFLAGS += \
-	-D_GNU_SOURCE \
-	-I$(PYTHON_INC_DIR)
+	-D_GNU_SOURCE
+
+#ifeq ($(CONFIG_GPSD_PYTHON),y)
+	TARGET_CFLAGS += \
+		-I$(PYTHON_INC_DIR)
+#else
+#	TARGET_CFLAGS += \
+#		-I$(PYTHON3_INC_DIR)
+#endif
 
 SCONS_VARS += \
 	LINKFLAGS="$(TARGET_LDFLAGS)"
@@ -344,6 +393,16 @@ endef
 Package/gpsd-python-minimal/install = $(Package/gpsd-python/install)
 Package/gpsd-python-timeservice/install = $(Package/gpsd-python/install)
 
+define Package/gpsd-python3/install
+	$(INSTALL_DIR) $(1)$(PYTHON3_PKG_DIR)/gps
+	$(CP) \
+	    $(PKG_INSTALL_DIR)/usr/lib/gps/* \
+	    $(1)$(PYTHON3_PKG_DIR)/gps/
+endef
+
+Package/gpsd-python3-minimal/install = $(Package/gpsd-python3/install)
+Package/gpsd-python3-timeservice/install = $(Package/gpsd-python3/install)
+
 define Package/libgps/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libgps.so.* $(1)/usr/lib/
@@ -361,6 +420,9 @@ $(eval $(call BuildPackage,gpsd-clients-timeservice))
 $(eval $(call BuildPackage,gpsd-python))
 $(eval $(call BuildPackage,gpsd-python-minimal))
 $(eval $(call BuildPackage,gpsd-python-timeservice))
+$(eval $(call BuildPackage,gpsd-python3))
+$(eval $(call BuildPackage,gpsd-python3-minimal))
+$(eval $(call BuildPackage,gpsd-python3-timeservice))
 $(eval $(call BuildPackage,libgps))
 $(eval $(call BuildPackage,libgps-minimal))
 $(eval $(call BuildPackage,libgps-timeservice))
