@@ -8,5 +8,15 @@ config NTPSEC_SECCOMP
 	  Build NTPsec with support for seccomp filters.
 	  Select libseccomp which also pulls-in the needed kernel features.
 
-endmenu
+choice
+	prompt "Python version"
+	default NTPSEC_PYTHON
 
+	config NTPSEC_PYTHON
+		bool "2"
+
+	config NTPSEC_PYTHON3
+		bool "3"
+endchoice
+
+endmenu

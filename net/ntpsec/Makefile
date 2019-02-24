@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ntpsec
 #PKG_VERSION:=1.1.2
-PKG_SOURCE_DATE:=2019-02-10
+PKG_SOURCE_DATE:=2019-02-24
 PKG_VERSION:=1.1.3-$(PKG_SOURCE_DATE)
 PKG_RELEASE:=1
 
@@ -17,18 +17,19 @@ PKG_RELEASE:=1
 #PKG_SOURCE_URL:=ftp://ftp.ntpsec.org/pub/releases/
 #PKG_HASH:=9dfaf1d791109160b3632a203bd75c784c54902442cea36983d5131b9f3b0111
 
-PKG_REV:=08b53a4ab8b69f5506df419c01f6f05266ab1e8e
+PKG_REV:=9bb3234ceb79ccec3cdc1feb66006bb42b7a3b2f
 PKG_SOURCE_URL:=https://gitlab.com/NTPsec/ntpsec.git
-PKG_MIRROR_HASH:=e532c3a0ae61bd9cd663120dc24f090f9bb58ca0d4544bc96570166492f45984
+PKG_MIRROR_HASH:=ffc7e6bf61b4a5b99f6f0091f1e5ab9fd23628bafa01b972c108986b9772c53b
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=$(PKG_REV)
 
-PKG_BUILD_DEPENDS:=pps-tools
+PKG_BUILD_DEPENDS:=pps-tools python python3
 
-PKG_CONFIG_DEPENDS:=CONFIG_NTPSEC_SECCOMP
+PKG_CONFIG_DEPENDS:=CONFIG_NTPSEC_PYTHON CONFIG_NTPSEC_SECCOMP
 
 include $(INCLUDE_DIR)/package.mk
 include ../../lang/python/python-package.mk
+include ../../lang/python/python3-package.mk
 
 define Package/ntpsecd/Default
   SUBMENU:=Time Synchronization
@@ -36,7 +37,6 @@ define Package/ntpsecd/Default
   CATEGORY:=Network
   TITLE:=NTPsec
   URL:=https://www.ntpsec.org/
-  DEPENDS:=+kmod-pps
 endef
 
 define Package/ntpsecd/Default/description
@@ -48,7 +48,7 @@ define Package/ntpsecd
 $(call Package/ntpsecd/Default)
   TITLE+= server
   USERID:=ntp=123:ntp=123
-  DEPENDS+= +libcap +libopenssl +NTPSEC_SECCOMP:libseccomp
+  DEPENDS:=+kmod-pps +libcap +libopenssl +NTPSEC_SECCOMP:libseccomp
 endef
 
 define Package/ntpsecd/description
@@ -64,7 +64,7 @@ endef
 define Package/ntpsecdate
 $(call Package/ntpsecd/Default)
   TITLE+=date
-  DEPENDS+= +ntpsec-utils
+  DEPENDS:=+ntpsec-utils
 endef
 
 define Package/ntpsecdate/description
@@ -76,7 +76,7 @@ endef
 define Package/ntpsecmon
 $(call Package/ntpsecd/Default)
   TITLE+=mon
-  DEPENDS+= +ntpsec-utils +python-ncurses
+  DEPENDS:=+ntpsec-utils +NTPSEC_PYTHON:python-ncurses +NTPSEC_PYTHON3:python3-ncurses
 endef
 
 define Package/ntpsecmon/description
@@ -88,7 +88,7 @@ endef
 define Package/ntpsec-python
 $(call Package/ntpsecd/Default)
   TITLE+= Python
-  DEPENDS+= +python-codecs +python-logging +python-openssl
+  DEPENDS:=+python-codecs +python-logging +python-openssl
 endef
 
 define Package/ntpsec-python/description
@@ -97,10 +97,22 @@ $(call Package/ntpsecd/Default/description)
  This package contains the Python libraries.
 endef
 
+define Package/ntpsec-python3
+$(call Package/ntpsecd/Default)
+  TITLE+= Python3
+  DEPENDS:=+python3-codecs +python3-logging +python3-openssl
+endef
+
+define Package/ntpsec-python3/description
+$(call Package/ntpsecd/Default/description)
+ .
+ This package contains the Python3 libraries.
+endef
+
 define Package/ntpsec-utils
 $(call Package/ntpsecd/Default)
   TITLE+= utilities
-  DEPENDS+= +ntpsec-python
+  DEPENDS:=+NTPSEC_PYTHON:ntpsec-python +NTPSEC_PYTHON3:ntpsec-python3
 endef
 
 define Package/ntpsec-utils/description
@@ -112,7 +124,7 @@ endef
 define Package/ntpsecviz
 $(call Package/ntpsecd/Default)
   TITLE+=viz
-  DEPENDS+= +gnuplot +ntpsec-python
+  DEPENDS:=+gnuplot +NTPSEC_PYTHON:ntpsec-python +NTPSEC_PYTHON3:ntpsec-python3
 endef
 
 define Package/ntpsecviz/description
@@ -125,12 +137,19 @@ define Package/ntpsecd/conffiles
 /etc/ntp.conf
 endef
 
-TARGET_CPPFLAGS += -I$(PYTHON_INC_DIR)
+ifeq ($(CONFIG_NTPSEC_PYTHON),y)
+	TARGET_CPPFLAGS += \
+		-I$(PYTHON_INC_DIR)
+else
+	TARGET_CPPFLAGS += \
+		-I$(PYTHON3_INC_DIR)
+endif
 
 define Build/Compile
 	cd $(PKG_BUILD_DIR) && \
 	$(HOST_CONFIGURE_VARS) \
-	./waf configure && \
+	./waf configure \
+		--python=$(if $(CONFIG_NTPSEC_PYTHON),$(PYTHON),$(PYTHON3)) && \
 	./waf build_host && \
 	./waf install_host && \
 	cd $(PKG_BUILD_DIR) && \
@@ -143,6 +162,7 @@ define Build/Compile
 $(if $(CONFIG_NTPSEC_SECCOMP), \
 		--enable-seccomp \
 ) \
+		--python=$(if $(CONFIG_NTPSEC_PYTHON),$(PYTHON),$(PYTHON3)) \
 		--prefix=/usr \
 		--refclock="shm" && \
 	./waf build_main && \
@@ -196,6 +216,17 @@ define Package/ntpsec-python/install
 	$(RM) $(1)$(PYTHON_PKG_DIR)/ntp/ntpc
 endef
 
+define Package/ntpsec-python3/install
+	$(INSTALL_DIR) $(1)$(PYTHON3_PKG_DIR)
+	$(CP) \
+	    $(PKG_INSTALL_DIR)$(PYTHON3_PKG_DIR)/* \
+	    $(1)$(PYTHON3_PKG_DIR)
+	$(CP) \
+	    $(PKG_INSTALL_DIR)$(PYTHON3_PKG_DIR)/ntp/ntpc \
+	    $(1)$(PYTHON3_PKG_DIR)/ntp/ntpc.so
+	$(RM) $(1)$(PYTHON3_PKG_DIR)/ntp/ntpc
+endef
+
 define Package/ntpsec-utils/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) \
@@ -212,5 +243,6 @@ $(eval $(call BuildPackage,ntpsecd))
 $(eval $(call BuildPackage,ntpsecdate))
 $(eval $(call BuildPackage,ntpsecmon))
 $(eval $(call BuildPackage,ntpsec-python))
+$(eval $(call BuildPackage,ntpsec-python3))
 $(eval $(call BuildPackage,ntpsec-utils))
 $(eval $(call BuildPackage,ntpsecviz))
